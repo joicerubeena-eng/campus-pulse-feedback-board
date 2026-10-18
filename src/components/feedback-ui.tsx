@@ -12,7 +12,7 @@ export function StarInput({
   value: number;
   onChange: (v: number) => void;
   label: string;
-  error?: string;
+  error?: string | undefined;
 }) {
   return (
     <div>

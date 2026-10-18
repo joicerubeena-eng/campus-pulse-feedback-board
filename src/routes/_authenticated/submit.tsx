@@ -47,7 +47,7 @@ function SubmitPage() {
   const { data: me } = useMe();
   const queryClient = useQueryClient();
   const [form, setForm] = useState<FormState>(empty);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -64,8 +64,8 @@ function SubmitPage() {
     e.preventDefault();
     const parsed = feedbackSchema.safeParse(form);
     if (!parsed.success) {
-      const errs: Record<string, string> = {};
-      parsed.error.issues.forEach((i) => (errs[String(i.path[0])] ??= i.message));
+      const errs: Partial<Record<keyof FormState, string>> = {};
+      parsed.error.issues.forEach((i) => (errs[i.path[0] as keyof FormState] ??= i.message));
       setErrors(errs);
       toast.error("Please fix the highlighted fields");
       return;

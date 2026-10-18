@@ -33,7 +33,10 @@ export function FeedbackDetailDialog({
 
   const save = async (nextStatus: FeedbackStatus) => {
     if (!feedback) return;
-    if (reply.length > 2000) return toast.error("Response must be under 2000 characters");
+    if (reply.length > 2000) {
+      toast.error("Response must be under 2000 characters");
+      return;
+    }
     setBusy(true);
     const trimmed = reply.trim();
     const replyChanged = trimmed !== (feedback.admin_response ?? "");
@@ -46,7 +49,10 @@ export function FeedbackDetailDialog({
       })
       .eq("id", feedback.id);
     setBusy(false);
-    if (error) return toast.error("Couldn't save changes", { description: error.message });
+    if (error) {
+      toast.error("Couldn't save changes", { description: error.message });
+      return;
+    }
     await queryClient.invalidateQueries({ queryKey: ["feedback"] });
     if (nextStatus !== feedback.status) {
       if (nextStatus === "resolved") toast.success("Feedback marked as resolved");

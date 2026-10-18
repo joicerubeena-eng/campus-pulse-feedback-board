@@ -22,7 +22,7 @@ export const meQuery = queryOptions({
     return {
       id: user.id,
       email: user.email ?? "",
-      fullName: profile.data?.full_name || (user.user_metadata?.full_name as string) || "",
+      fullName: profile.data?.full_name || (user.user_metadata?.['full_name'] as string) || "",
       role,
     };
   },

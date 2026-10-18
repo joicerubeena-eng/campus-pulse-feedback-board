@@ -25,7 +25,7 @@ export function AuthCard({ kind }: { kind: "student" | "admin" }) {
   const queryClient = useQueryClient();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [form, setForm] = useState({ email: "", password: "", fullName: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof typeof form, string>>>({});
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
 
@@ -33,8 +33,8 @@ export function AuthCard({ kind }: { kind: "student" | "admin" }) {
     e.preventDefault();
     setNotice("");
     const parsed = schema.safeParse(form);
-    const errs: Record<string, string> = {};
-    if (!parsed.success) parsed.error.issues.forEach((i) => (errs[String(i.path[0])] = i.message));
+    const errs: Partial<Record<"email" | "password" | "fullName", string>> = {};
+    if (!parsed.success) parsed.error.issues.forEach((i) => (errs[i.path[0] as "email"] = i.message));
     if (mode === "signup" && !form.fullName.trim()) errs.fullName = "Enter your full name";
     setErrors(errs);
     if (Object.keys(errs).length) return;
