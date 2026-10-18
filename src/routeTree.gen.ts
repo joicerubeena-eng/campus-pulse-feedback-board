@@ -10,12 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedMyFeedbackRouteImport } from './routes/_authenticated/my-feedback'
+import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -28,33 +35,58 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedMyFeedbackRoute = AuthenticatedMyFeedbackRouteImport.update({
+  id: '/my-feedback',
+  path: '/my-feedback',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSubmitRoute = AuthenticatedSubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin-login': typeof AdminLoginRoute
   '/login': typeof LoginRoute
+  '/my-feedback': typeof AuthenticatedMyFeedbackRoute
+  '/submit': typeof AuthenticatedSubmitRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin-login': typeof AdminLoginRoute
   '/login': typeof LoginRoute
+  '/my-feedback': typeof AuthenticatedMyFeedbackRoute
+  '/submit': typeof AuthenticatedSubmitRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/admin-login': typeof AdminLoginRoute
   '/login': typeof LoginRoute
+  '/_authenticated/my-feedback': typeof AuthenticatedMyFeedbackRoute
+  '/_authenticated/submit': typeof AuthenticatedSubmitRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin-login' | '/login'
+  fullPaths: '/' | '/admin-login' | '/login' | '/my-feedback' | '/submit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin-login' | '/login'
-  id: '__root__' | '/' | '/admin-login' | '/login'
+  to: '/' | '/admin-login' | '/login' | '/my-feedback' | '/submit'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/admin-login'
+    | '/login'
+    | '/_authenticated/my-feedback'
+    | '/_authenticated/submit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AdminLoginRoute: typeof AdminLoginRoute
   LoginRoute: typeof LoginRoute
 }
@@ -66,6 +98,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-login': {
@@ -82,11 +121,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/my-feedback': {
+      id: '/_authenticated/my-feedback'
+      path: '/my-feedback'
+      fullPath: '/my-feedback'
+      preLoaderRoute: typeof AuthenticatedMyFeedbackRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/submit': {
+      id: '/_authenticated/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof AuthenticatedSubmitRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedMyFeedbackRoute: typeof AuthenticatedMyFeedbackRoute
+  AuthenticatedSubmitRoute: typeof AuthenticatedSubmitRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedMyFeedbackRoute: AuthenticatedMyFeedbackRoute,
+  AuthenticatedSubmitRoute: AuthenticatedSubmitRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
   LoginRoute: LoginRoute,
 }
